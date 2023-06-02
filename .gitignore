@@ -10,6 +10,14 @@
 /test/version_tmp/
 /tmp/
 
+.env
+
+# Remove files required by the script itself
+Gemfile.lock
+logs/*
+teams.yml
+teams_access_by_repo.yaml
+
 # Used by dotenv library to load environment variables.
 # .env
 
