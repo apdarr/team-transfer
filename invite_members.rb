@@ -94,7 +94,7 @@ class InviteMembers
         timestamp = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
         file_name = "logs/invite_members_log_#{timestamp}.txt"
         File.open("#{file_name}", "w") do |file|
-            puts "📝 Writing logs to invite_members_log_#{timestamp}.txt"
+            puts "📝 Writing logs to #{file_name}"
             file.puts "- Current org members count in #{ENV["GH_ORG"]}: #{@initial_org_members_count}"
             file.puts "- Invited #{@invited_members.count} members to #{ENV["GH_TARGET_ORG"]}:"
             @invited_members.each do |member|

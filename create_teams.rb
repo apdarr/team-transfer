@@ -53,7 +53,7 @@ class TeamStructure
         timestamp = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
         file_name = "logs/create_teams_log_#{timestamp}.txt"
         File.open("#{file_name}", "w") do |file|
-            puts "Writing logs to logs/get_teams_log_#{timestamp}.txt... 📝"
+            puts "Writing logs to #{file_name}... 📝"
             file.puts "- Created #{@created_teams.length} teams in #{ENV["GH_TARGET_ORG"]}"
             file.puts " "
             # If we had some failed team creations, write a log of those

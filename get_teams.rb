@@ -183,7 +183,7 @@ class TeamStructure
         timestamp = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
         file_name = "logs/get_teams_log_#{timestamp}.txt"
         File.open("#{file_name}", "w") do |file|
-            puts "Writing logs to logs/get_teams_log_#{timestamp}.txt... 📝"
+            puts "Writing logs to #{file_name}... 📝"
             file.puts "- Initial team members count in #{ENV["GH_ORG"]}: #{@team_count}"
             file.puts "- Successfully parsed #{parsed_team_count} teams within #{ENV["GH_ORG"]}"
             file.puts "------"
