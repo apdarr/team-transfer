@@ -1,15 +1,27 @@
 require "octokit"
-require "dotenv/load"
 require "debug"
 require "yaml"
 require "pp"
 require "hashie"
+require "optparse"
+
+options = { :env_file => ".env" }
+
+OptionParser.new do |opts|
+    opts.banner = "Usage: transfer_repos.rb [options]"
+
+    opts.on("-eENV_FILE", "--env=ENV_FILE", "Path to .env file") do |env_file|
+        options[:env_file] = env_file
+    end
+end.parse!
+
+Dotenv.load(options[:env_file])
 
 class TransferRepos
 
     # Initiatlize with Octokit and the teams.yml file generate from create_teams.rb
     def initialize
-        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"])
+        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"], :api_endpoint => ENV.fetch('GH_REST_API', 'https://api.github.com'))
         @client.auto_paginate = true
         @hierarchy = YAML.load_file("teams.yml")
         @hierarchy.extend Hashie::Extensions::DeepFind

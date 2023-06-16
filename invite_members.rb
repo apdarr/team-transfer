@@ -1,13 +1,25 @@
-require "octokit"
 require "dotenv/load"
 require "debug"
 require "yaml"
+require "optparse"
+
+options = { :env_file => ".env" }
+
+OptionParser.new do |opts|
+    opts.banner = "Usage: invite_members.rb [options]"
+
+    opts.on("-eENV_FILE", "--env=ENV_FILE", "Path to .env file") do |env_file|
+        options[:env_file] = env_file
+    end
+end.parse!
+
+Dotenv.load(options[:env_file])
 
 
 class InviteMembers
 
     def initialize
-        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"])
+        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"], :api_endpoint => ENV.fetch('GH_REST_API', 'https://api.github.com'))
         @client.auto_paginate = true
         @hierarchy = YAML.load_file("teams.yml")
         @initial_org_members_count = @client.org_members(ENV["GH_ORG"]).count

@@ -1,12 +1,25 @@
 require "debug"
 require "yaml"
 require "octokit"
-require "dotenv/load"
+require "dotenv"
+require "optparse"
+
+options = { :env_file => ".env" }
+
+OptionParser.new do |opts|
+    opts.banner = "Usage: create_teams.rb [options]"
+
+    opts.on("-eENV_FILE", "--env=ENV_FILE", "Path to .env file") do |env_file|
+        options[:env_file] = env_file
+    end
+end.parse!
+
+Dotenv.load(options[:env_file])
 
 class TeamStructure
 
     def initialize
-        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"])
+        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"], :api_endpoint => ENV.fetch('GH_REST_API', 'https://api.github.com'))
         @client.auto_paginate = true
         @failed_team_creation = {}
         @created_teams = []
