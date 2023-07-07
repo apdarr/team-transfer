@@ -2,12 +2,25 @@ require "hashie"
 require "debug"
 require "yaml"
 require "octokit"
-require "dotenv/load"
 require "graphql/client"
 require "graphql/client/http"
+require "dotenv"
+require "optparse"
+
+options = { :env_file => ".env" }
+
+OptionParser.new do |opts|
+    opts.banner = "Usage: get_teams.rb [options]"
+
+    opts.on("-eENV_FILE", "--env=ENV_FILE", "Path to .env file") do |env_file|
+        options[:env_file] = env_file
+    end
+end.parse!
+
+Dotenv.load(options[:env_file])
 
 module GitHub
-    HTTP = GraphQL::Client::HTTP.new("https://api.github.com/graphql") do
+    HTTP = GraphQL::Client::HTTP.new(ENV.fetch('GH_GRAPHQL_API', 'https://api.github.com/graphql')) do
         def headers(context)
             {
                 "Authorization" => "Bearer #{ENV["GH_TOKEN"]}",
@@ -78,7 +91,7 @@ end
 class TeamStructure 
     
     def initialize 
-        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"])
+        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"], :api_endpoint => ENV.fetch('GH_REST_API', 'https://api.github.com'))
         @client.auto_paginate = true
         @teams = @client.org_teams(ENV["GH_ORG"])
         @hierarchy = []
@@ -170,7 +183,7 @@ class TeamStructure
         timestamp = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
         file_name = "logs/get_teams_log_#{timestamp}.txt"
         File.open("#{file_name}", "w") do |file|
-            puts "Writing logs to logs/get_teams_log_#{timestamp}.txt... 📝"
+            puts "Writing logs to #{file_name}... 📝"
             file.puts "- Initial team members count in #{ENV["GH_ORG"]}: #{@team_count}"
             file.puts "- Successfully parsed #{parsed_team_count} teams within #{ENV["GH_ORG"]}"
             file.puts "------"

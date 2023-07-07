@@ -16,6 +16,7 @@ The scripts also require a few [Ruby gems](https://guides.rubygems.org/what-is-a
 2. Install bundler with `gem install bundler` (if running on macOS, your machine should already have Ruby installed).
 3. In your terminal, run `bundle install` to install the dependencies.
 4. This will generate a new file, Gemfile.lock, which contains the specific versions of the gems that were installed. If you're coming from the Node.js world, this Gemfile.lock file is similar [to `the package-lock.json` file](https://docs.npmjs.com/cli/v9/configuring-npm/package-lock-json). 
+5. Finally, create the `log` directory with `mkdir log` to contain records of executing scripts
 
 ## Create your .env file 
 THis script requires a few environment variables to be set. You can do this by creating a `.env` file in the working directory. I've created a `.env.sample` file to get started. Rename this file to be `.env` file, which should contain the following variables:
@@ -29,6 +30,17 @@ Once you've finished editing these values, you should have a .env file in the wo
 GH_ORG=my-source-org
 GH_TARGET_ORG=my-target-org
 GH_TOKEN=ghp_1234abcd
+```
+
+For working GitHub Enterprise Server, you will need to set 2 additional environment variables based on your GHES deployment:
+- `GH_REST_URL=` URL and path for making REST API calls
+- `GH_GRAPHQL_URL=` URL and path for making GraphQL API calls
+
+For example:
+
+```
+GH_GRAPHQL_API=https://0785a2994314098ba.example.com/api/graphql
+GH_REST_API=https://0785a2994314098ba.example.com/api/v3
 ```
 
 # Migrating teams

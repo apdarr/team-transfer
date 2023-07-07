@@ -1,12 +1,25 @@
 require "debug"
 require "yaml"
 require "octokit"
-require "dotenv/load"
+require "dotenv"
+require "optparse"
+
+options = { :env_file => ".env" }
+
+OptionParser.new do |opts|
+    opts.banner = "Usage: create_teams.rb [options]"
+
+    opts.on("-eENV_FILE", "--env=ENV_FILE", "Path to .env file") do |env_file|
+        options[:env_file] = env_file
+    end
+end.parse!
+
+Dotenv.load(options[:env_file])
 
 class TeamStructure
 
     def initialize
-        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"])
+        @client = Octokit::Client.new(:access_token => ENV["GH_TOKEN"], :api_endpoint => ENV.fetch('GH_REST_API', 'https://api.github.com'))
         @client.auto_paginate = true
         @failed_team_creation = {}
         @created_teams = []
@@ -40,7 +53,7 @@ class TeamStructure
         timestamp = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
         file_name = "logs/create_teams_log_#{timestamp}.txt"
         File.open("#{file_name}", "w") do |file|
-            puts "Writing logs to logs/get_teams_log_#{timestamp}.txt... 📝"
+            puts "Writing logs to #{file_name}... 📝"
             file.puts "- Created #{@created_teams.length} teams in #{ENV["GH_TARGET_ORG"]}"
             file.puts " "
             # If we had some failed team creations, write a log of those
